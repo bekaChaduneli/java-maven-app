@@ -26,7 +26,7 @@ pipeline {
         stage("build image") {
             steps {
                 script {
-                    buildImage()
+                    buildImage 'chadunelib/my-repository:jma-3.0'
                 }
             }
         }
