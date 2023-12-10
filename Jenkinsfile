@@ -1,10 +1,6 @@
 #!/usr/bin/env groovy
 
-library identifier: 'jenkins-shared-library@master', retriver: modernSCM(
-        [$class: 'GitSCMSource'],
-        remote: 'https://github.com/bekaChaduneli/jenkins-shared-library.git',
-        credentialsId: 'bekaChaduneli'
-)
+@Library('jenkins-shared-library')
 
 def gv
 
@@ -31,9 +27,9 @@ pipeline {
         stage("build and push image") {
             steps {
                 script {
-                    buildImage 'chadunelib/my-repository:jma-3.0'
+                    buildImage 'chadunelib/my-repository:jma-4.0'
                     dockerLogin()
-                    dockerPush 'chadunelib/my-repository:jma-3.0'
+                    dockerPush 'chadunelib/my-repository:jma-4.0'
                 }
             }
         }
