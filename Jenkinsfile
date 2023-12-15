@@ -35,6 +35,9 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repository', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
+                    }
                     def dockerCmd = 'docker run -p 3080:3080 -d chadunelib/my-repository:1.0'
                     sshagent(['ec2-server-key']) {
                         sh "ssh -o StrictHostKeyChecking=no ec2-user@35.180.97.166 ${dockerCmd}"
