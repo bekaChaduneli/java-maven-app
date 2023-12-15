@@ -26,24 +26,23 @@ pipeline {
         stage("build and push image") {
             steps {
                 script {
-                    buildImage 'chadunelib/my-repository:jma-4.0'
+                    buildImage 'chadunelib/my-repository:jma-5.0'
                     dockerLogin()
-                    dockerPush 'chadunelib/my-repository:jma-4.0'
+                    dockerPush 'chadunelib/my-repository:jma-5.0'
                 }
             }
         }
         stage("deploy") {
             steps {
                 script {
+                    def dockerCmd = 'docker pull chadunelib/my-repository:jma-5.0 && docker run -p 3080:3080 -d chadunelib/my-repository:jma-5.0'
+                    
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-repository', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-                    }
-                    def dockerCmd = 'docker run -p 3080:3080 -d chadunelib/my-repository:1.0'
-                    sshagent(['ec2-server-key']) {
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@35.180.97.166 ${dockerCmd}"
+                        sshagent(['ec2-server-key']) {
+                            sh "docker login -u $USERNAME -p $PASSWORD && ssh -o StrictHostKeyChecking=no ec2-user@35.180.97.166 ${dockerCmd}"
+                        }
                     }
                 }
-
             }
         }
     }
